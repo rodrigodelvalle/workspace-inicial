@@ -2,8 +2,25 @@ document.addEventListener("DOMContentLoaded", function () {
     const catID = localStorage.getItem("catID");
     const URL_PRODUCTS = "https://japceibal.github.io/emercado-api/cats_products/" + catID + ".json";
     let productsCar = document.getElementById("containerItems");
-    let originalData = [];
     let nameCat = "";
+
+    //Array que contiene elementos obtenidos de api (fetch)
+    //let productsArray = [];
+
+
+    fetch(URL_PRODUCTS)
+        .then(res => res.json())
+        .then(data => {
+            originalData = data.products;
+            nameCat = data.name;
+            namesCategory(data);
+            showCategory(originalData);
+
+        });
+
+});
+
+  let originalData = [];
 
     function namesCategory(items) {
         let names = document.getElementById("categoryName")
@@ -13,10 +30,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function showCategory(itemsArray) {
+        this.productsArray = itemsArray;
         let htmlContentToAppend = "";
         for (let i = 0; i < itemsArray.length; i++) {
             htmlContentToAppend += `
-                <div class="list-group-item list-group-item-action cursor-active">
+                <div onclick="setProductId(${itemsArray[i].id})" class="list-group-item list-group-item-action cursor-active">
                     <div class="row">
                         <div class="col-3">
                             <img src="${itemsArray[i].image}" alt="${itemsArray[i].description}" class="img-thumbnail">
@@ -33,10 +51,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 `
         }
 
-        document.getElementById("containerItems").innerHTML = htmlContentToAppend;
+        document.getElementById("containerItemsProducts").innerHTML = htmlContentToAppend;
     }
-
-    document.getElementById("rangeFilterCount").addEventListener("click", function () {
+    let botonFiltrarRango = document.getElementById("rangeFilterCount");
+    botonFiltrarRango.addEventListener("click", function () {
         const minPrice = document.getElementById("rangeFilterCountMin").value;
         const maxPrice = document.getElementById("rangeFilterCountMax").value;
         let filtrarPrecio = originalData.filter(product => {
@@ -65,6 +83,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const searchInput = document.getElementById("productSearch");
 
+   
     searchInput.addEventListener("input", function () {
         const searchText = searchInput.value.toLowerCase().trim();
 
@@ -112,15 +131,8 @@ document.addEventListener("DOMContentLoaded", function () {
         showCategory(itemsArray);
     });
 
-    fetch(URL_PRODUCTS)
-        .then(res => res.json())
-        .then(data => {
-            originalData = data.products;
-            nameCat = data.name;
-            namesCategory(data);
-            showCategory(originalData);
-
-        });
-
-})
+function setProductId(id) {
+    localStorage.setItem("IdProduct", id);
+    window.location = "product-info.html";
+}
 
