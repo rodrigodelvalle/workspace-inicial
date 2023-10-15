@@ -29,6 +29,50 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+
+
+//Botón que agrega el producto seleccionado a la lista
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("comprar").addEventListener("click", () => {
+        let idProduct = localStorage.getItem("IdProduct"); // Corregir si es necesario
+        if (idProduct) {
+            let URL = "https://japceibal.github.io/emercado-api/products/" + idProduct + ".json";
+            fetch(URL)
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error('Error en la solicitud fetch');
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    let arrayProductos = JSON.parse(localStorage.getItem('arrayProductos')) || [];
+                    
+            
+                    // Verificar si el producto ya está en el carrito 
+                    const productExists = arrayProductos.some(product => product.id === data.id);
+                    if (!productExists) {
+                        arrayProductos.push(data);
+                        localStorage.setItem('arrayProductos', JSON.stringify(arrayProductos));
+                        console.log(arrayProductos);
+                    } else {
+                        Swal.fire({
+                            title:"Ya se encuentra en el carrito"
+
+                          })
+                    }
+
+
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        } else {
+            console.error('IdProduct no encontrado en el almacenamiento local.');
+        }
+    });
+});
+
+
 function showProduct(product) {
     let htmlContentToAppend = "";
     htmlContentToAppend += `
@@ -90,9 +134,9 @@ function showRelatedProducts() {
             let productosMostrados = 4;
             for (let i = 0; i < productosMostrados && i < data.products.length; i++) {
                 let product = data.products[i];
-                if (parseInt(idProduct) !== product.id) {
+                if (parseInt(idProduct) !== product.id) {   //Se modifico a style="width: 30vw; para el content //
                     content += `
-                        <div class="card" style="width: 18rem; cursor: pointer; display: inline-block">
+                        <div class="card" style="width: 30vw; cursor: pointer; display: inline-block"> 
                             <div onclick="setProductId(${product.id})"">
                                 <img src="${product.image}" class="card-img-top">
                                     <div class="card-body">
