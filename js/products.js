@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+    /*Se ejecuta al iniciar la página */
     const catID = localStorage.getItem("catID");
     const URL_PRODUCTS = "https://japceibal.github.io/emercado-api/cats_products/" + catID + ".json";
     let productsCar = document.getElementById("containerItems");
@@ -9,6 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     fetch(URL_PRODUCTS)
+        /*Se realiza un fetch para obtener los datos del API */
         .then(res => res.json())
         .then(data => {
             originalData = data.products;
@@ -18,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         });
 
-        //modo dark del nav
+        /*Esta fracción de código se encarga de regir el modo Dark y Light del navbar */
         let nav = document.getElementById("navIndex")
         let mode = localStorage.getItem('mode')
         if(mode === 'dark'){
@@ -40,6 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let originalData = [];
 
     function namesCategory(items) {
+        /*La función permite mostrar la categoria con el agregado de una etiqueta h1*/
         let names = document.getElementById("categoryName")
         let htmlContentToAppend = ` <h1>${items.catName}</h1>
     <p class="lead">Verás aquí lo que estas buscando.</p> `
@@ -47,6 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function showCategory(itemsArray) {
+        /*Esta función permite mostrar a los items individuales mediante el agregado de etiquetas con variables obtenidas desde el fetch */
         this.productsArray = itemsArray;
         let htmlContentToAppend = "";
         for (let i = 0; i < itemsArray.length; i++) {
@@ -70,8 +74,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         document.getElementById("containerItemsProducts").innerHTML = htmlContentToAppend;
     }
-    let botonFiltrarRango = document.getElementById("rangeFilterCount");
+    let botonFiltrarRango = document.getElementById("rangeFilterCount"); //Establece el botón de filtrado de precio máximo y mínimo
     botonFiltrarRango.addEventListener("click", function () {
+        /*Función que regula el filtrado de precio máximo y mínimo */
         const minPrice = document.getElementById("rangeFilterCountMin").value;
         const maxPrice = document.getElementById("rangeFilterCountMax").value;
         let filtrarPrecio = originalData.filter(product => {
@@ -84,12 +89,14 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             return true;
         });
-        filtrarPrecio.sort((a, b) => a.cost - b.cost);
+        filtrarPrecio.sort((a, b) => a.cost - b.cost);  //sort que regula el orden de los productos
         showCategory(filtrarPrecio);
 
     });
 
     document.getElementById("clearRangeFilter").addEventListener("click", function () {
+        /*Función que regula el botón "limpiar" de la página. Al hacer click, se limpiarán los valores "minPrice" y "maxPrice". 
+        Posteriormente ejecuta showCategory para volver a mostrar los items */
         document.getElementById("rangeFilterCountMin").value = "";
         document.getElementById("rangeFilterCountMax").value = "";
 
@@ -98,11 +105,12 @@ document.addEventListener("DOMContentLoaded", function () {
         showCategory(originalData);
     });
 
-    const searchInput = document.getElementById("productSearch");
+    const searchInput = document.getElementById("productSearch"); //Se crea la constante searchInput que tomará el valor de string colocado en la barra buscador
 
    
     searchInput.addEventListener("input", function () {
-        const searchText = searchInput.value.toLowerCase().trim();
+        /*Esta función permite buscar items por su nombre y descripción. */
+        const searchText = searchInput.value.toLowerCase().trim();  //Tomará el valor escrito en la barra de busqueda. Se le sacará los espación de los extremos y se pasará a minúscula.
 
         let filteredProducts = originalData.filter(product => {
             const productName = product.name.toLowerCase();
@@ -110,15 +118,17 @@ document.addEventListener("DOMContentLoaded", function () {
             return productName.includes(searchText) || productDescription.includes(searchText);
         });
 
-        showCategory(filteredProducts);
+        showCategory(filteredProducts);   //Ejecuta la función para volver a mostrar los resultados
 
     });
 
+    /*Creación de 3 botones para su uso posterior en funciones */
     let btnDesc = document.getElementById("sortByCount1");
     let btnAsc = document.getElementById("sortByCount2");
     let relevant = document.getElementById("sortByRel");
 
     btnDesc.addEventListener('click', function () {
+        /*Botón que al hacer click ordenará de manera descendente el precio (El mayor precio queda primero)  */
         let itemsArray = originalData.slice();
 
         itemsArray.sort(function (a, b) {
@@ -129,6 +139,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     btnAsc.addEventListener('click', function () {
+        /*Botón que al hacer click ordenará de manera ascendente el precio (El menor precio queda primero)  */
         let itemsArray = originalData.slice();
 
         itemsArray.sort(function (a, b) {
@@ -139,6 +150,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     relevant.addEventListener('click', function () {
+        /*Botón que al hacer click ordenará de manera descendente por número de productos relacionados (El mayor precio queda primero)  */
         let itemsArray = originalData.slice();
 
         itemsArray.sort(function (a, b) {
@@ -149,6 +161,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 function setProductId(id) {
+    /*Permite el acceso de items al hacer click en etiquetas mediante "onlick" dentro de la etiquetas del .html.
+    El objeto seteado en local storage se utilizará como varible dentro del onclick */
     localStorage.setItem("IdProduct", id);
     window.location = "product-info.html";
 }
